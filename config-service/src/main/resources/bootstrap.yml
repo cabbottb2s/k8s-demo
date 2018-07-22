@@ -1,0 +1,8 @@
+spring:
+  application.name: config-service
+  cloud.config:
+    server:
+      bootstrap: true
+      git:
+        uri: https://github.com/cabbottb2s/k8s-config.git
+

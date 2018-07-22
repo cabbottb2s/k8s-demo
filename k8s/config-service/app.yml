@@ -1,0 +1,24 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: config-service-production
+spec:
+  replicas: 2
+  template:
+    metadata:
+      name: config-service
+      labels:
+        app: config-service
+        env: production
+    spec:
+      containers:
+      - name: config-service
+        image: cabbottbridge2/config-service:1.0.1
+        imagePullPolicy: IfNotPresent
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+        ports:
+        - name: config-service
+          containerPort: 8080
