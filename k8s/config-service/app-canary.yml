@@ -3,7 +3,7 @@ apiVersion: extensions/v1beta1
 metadata:
   name: config-service-canary
 spec:
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       name: config-service
@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: config-service
-        image: cabbottbridge2/config-service:1.0.0
+        image: cabbottbridge2/config-service:1.1.0
         imagePullPolicy: IfNotPresent
         readinessProbe:
           httpGet:

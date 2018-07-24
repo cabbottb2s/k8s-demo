@@ -13,12 +13,13 @@ import java.util.Random;
 public class ToastController {
 
     private final int id = new Random(System.currentTimeMillis()).nextInt(10000);
+    private final String version = ToastController.class.getPackage().getImplementationVersion();
 
     @Value("${toast:awkward silence}")
     private String toast;
 
     @GetMapping
     public Mono<String> getToast() {
-        return Mono.just("From " + id + ": " + toast);
+        return Mono.just("From " + id + " (version " + version + "): " + toast);
     }
 }

@@ -13,12 +13,13 @@ import java.util.Random;
 public class MotdController {
 
     private final int id = new Random(System.currentTimeMillis()).nextInt(10000);
+    private final String version = MotdController.class.getPackage().getImplementationVersion();
 
     @Value("${motd:not set}")
     private String motd;
 
     @GetMapping
     public Mono<String> getMotd() {
-        return Mono.just("From " + id + ": " + motd);
+        return Mono.just("From " + id + " (version " + version + "): " + motd);
     }
 }

@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: config-service
-        image: cabbottbridge2/config-service:1.0.1
+        image: cabbottbridge2/config-service:1.1.0
         imagePullPolicy: IfNotPresent
         readinessProbe:
           httpGet:
