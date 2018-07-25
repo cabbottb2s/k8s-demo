@@ -56,7 +56,7 @@ curl http://$(kubectl get service gateway-service-lb -o jsonpath="{.status.loadB
 kubectl scale deployment gateway-service-production --replicas=3
 ```
 
-### Upgrade gateway-service to 1.1.0
+### Upgrade gateway-service to 1.1.x
 ```
 git checkout 1.1.x
 
@@ -75,6 +75,26 @@ kubectl rollout resume deployment gateway-service-production
 
 # [Validation] Access service via public IP
 curl http://$(kubectl get service gateway-service-lb -o jsonpath="{.status.loadBalancer.ingress[0].ip}")/toast
+```
 
+### Deploy session-service 1.1.x
+```
+git checkout 1.1.x
 
+# Build and publish images
+cd session-service
+./gradlew clean build dockerPush
+
+# Create Service
+cd ..
+kubectl apply -f k8s/session-service/lb.yml
+kubectl get service -w
+
+# Create Deployment
+kubectl apply -f k8s/session-service/app.yml --record
+kubectl get pod -w
+kubectl logs -l app=session-service
+
+# [Validation] Confirm service is locatable via DNS
+kubectl exec -it $(kubectl get pod -l app=gateway-service -o jsonpath="{.items[0].metadata.name}") -- wget -q -O - http://session-service-lb/sessions/1
 ```

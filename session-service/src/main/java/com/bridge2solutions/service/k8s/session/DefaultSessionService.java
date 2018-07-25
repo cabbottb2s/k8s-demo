@@ -22,7 +22,7 @@ public class DefaultSessionService implements SessionService {
     @CachePut(key = "#sessionId")
     @Override
     public String setSession(String sessionId, String sessionData) {
-        return sessionData;
+        return sessionData + " set " + OffsetDateTime.now();
     }
 
     @CacheEvict(key = "#sessionId")

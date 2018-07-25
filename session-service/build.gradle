@@ -38,6 +38,7 @@ dependencies {
     compile('org.springframework.cloud:spring-cloud-starter-sleuth')
     compile('org.springframework.boot:spring-boot-starter-cache')
     compile 'com.hazelcast:hazelcast-spring:3.10.3'
+    compile 'com.hazelcast:hazelcast-kubernetes:1.1.0'
     runtime("io.micrometer:micrometer-registry-prometheus")
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }

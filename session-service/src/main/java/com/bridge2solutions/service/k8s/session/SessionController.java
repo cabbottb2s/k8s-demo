@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Random;
 
+@SuppressWarnings("unused")
 @RestController
 @RequestMapping("sessions")
 public class SessionController {

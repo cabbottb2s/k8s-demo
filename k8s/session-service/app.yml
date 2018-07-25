@@ -1,0 +1,36 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: session-service-production
+spec:
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      name: session-service
+      labels:
+        app: session-service
+        env: production
+    spec:
+      containers:
+      - name: session-service
+        image: cabbottbridge2/session-service:1.1.9
+        imagePullPolicy: IfNotPresent
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+        env:
+        - name: SPRING_CLOUD_CONFIG_URI
+          value: 'http://config-service-lb/config'
+        - name: JAVA_OPTS
+          value: '-Dhazelcast.diagnostics.enabled=true'
+        ports:
+        - name: session-service
+          containerPort: 8080
+        - name: hazelcast
+          containerPort: 5701
