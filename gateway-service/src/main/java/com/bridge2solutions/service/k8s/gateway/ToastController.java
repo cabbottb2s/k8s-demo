@@ -1,5 +1,6 @@
 package com.bridge2solutions.service.k8s.gateway;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +19,18 @@ public class ToastController {
     @Value("${toast:awkward silence}")
     private String toast;
 
-    @GetMapping
-    public Mono<String> getToast() {
-        return Mono.just("From " + id + " (version " + version + "): " + toast);
+    @Autowired
+    private SessionClient sessionClient;
+
+    @GetMapping(produces = "application/json")
+    public Mono<Toast> getToast() {
+        final String value = "From " + id + " (version " + version + "): " + toast;
+        return sessionClient.getSession("1")
+            .map(sessionData -> {
+                final Toast toast = new Toast();
+                toast.setValue(value);
+                toast.setSession(sessionData);
+                return toast;
+            });
     }
 }
