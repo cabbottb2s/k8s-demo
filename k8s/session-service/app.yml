@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: session-service
-        image: cabbottbridge2/session-service:1.1.9
+        image: cabbottbridge2/session-service:1.2.0
         imagePullPolicy: IfNotPresent
         readinessProbe:
           httpGet:
@@ -27,6 +27,8 @@ spec:
         env:
         - name: SPRING_CLOUD_CONFIG_URI
           value: 'http://config-service-lb/config'
+        - name: SPRING_PROFILES_ACTIVE
+          value: kubernetes
         - name: JAVA_OPTS
           value: '-Dhazelcast.diagnostics.enabled=true'
         ports:

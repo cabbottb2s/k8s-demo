@@ -6,8 +6,10 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.kubernetes.HazelcastKubernetesDiscoveryStrategyFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 
 @SpringBootApplication
 @EnableCaching
@@ -18,21 +20,9 @@ public class SessionApplication {
     }
 
     @Bean
-    public HazelcastInstance hazelcastInstance() {
-
-        HazelcastKubernetesDiscoveryStrategyFactory factory = new HazelcastKubernetesDiscoveryStrategyFactory();
-        DiscoveryStrategyConfig discoveryConfig = new DiscoveryStrategyConfig(factory);
-//        discoveryConfig.addProperty("namespace", "production");
-//        discoveryConfig.addProperty("service-name", "session-service-lb");
-
-        discoveryConfig.addProperty("service-dns", "session-service-hazelcast");
-        discoveryConfig.addProperty("service-dns-timeout", 10);
-
-//        discoveryConfig.addProperty("service-label-name", "app");
-//        discoveryConfig.addProperty("service-label-value", "gateway-service");
-
+    public Config baseConfig() {
         final Config config = new Config()
-//            .setInstanceName("session-service-hazelcast")
+            //            .setInstanceName("session-service-hazelcast")
             .setProperty("hazelcast.discovery.enabled", "true")
             .addMapConfig(
                 new MapConfig()
@@ -49,9 +39,36 @@ public class SessionApplication {
         joinConfig.getMulticastConfig().setEnabled(false);
         joinConfig.getTcpIpConfig().setEnabled(false);
         joinConfig.getAwsConfig().setEnabled(false);
-        joinConfig.getDiscoveryConfig().addDiscoveryStrategyConfig(discoveryConfig);
+
+        return config;
+    }
+
+    @Profile("kubernetes")
+    @Bean
+    public HazelcastInstance hazelcastInstance() {
+
+        final Config config = baseConfig();
+
+        final HazelcastKubernetesDiscoveryStrategyFactory factory = new HazelcastKubernetesDiscoveryStrategyFactory();
+        final DiscoveryStrategyConfig discoveryConfig = new DiscoveryStrategyConfig(factory);
+//        discoveryConfig.addProperty("namespace", "production");
+//        discoveryConfig.addProperty("service-name", "session-service-lb");
+
+        discoveryConfig.addProperty("service-dns", "session-service-hazelcast");
+        discoveryConfig.addProperty("service-dns-timeout", 10);
+
+//        discoveryConfig.addProperty("service-label-name", "app");
+//        discoveryConfig.addProperty("service-label-value", "gateway-service");
+
+        config.getNetworkConfig().getJoin().getDiscoveryConfig().addDiscoveryStrategyConfig(discoveryConfig);
 
         return Hazelcast.newHazelcastInstance(config);
+    }
+
+    @ConditionalOnMissingBean(HazelcastInstance.class)
+    @Bean
+    public HazelcastInstance defaultHazelcastInstance() {
+        return Hazelcast.newHazelcastInstance(baseConfig());
     }
 
 }

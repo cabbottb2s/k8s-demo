@@ -52,6 +52,10 @@ kubectl logs -l app=gateway-service
 # [Validation] Access service via public IP
 curl http://$(kubectl get service gateway-service-lb -o jsonpath="{.status.loadBalancer.ingress[0].ip}")/toast
 
+# [Validation] Set up local port forwarding to test service endpoint
+kubectl port-forward deployment/gateway-service-production 40080:8080 &
+curl localhost:40080/toast
+
 # [Optional] Scale deployment up to 3 replicas
 kubectl scale deployment gateway-service-production --replicas=3
 ```
@@ -97,4 +101,22 @@ kubectl logs -l app=session-service
 
 # [Validation] Confirm service is locatable via DNS
 kubectl exec -it $(kubectl get pod -l app=gateway-service -o jsonpath="{.items[0].metadata.name}") -- wget -q -O - http://session-service-lb/sessions/1
+
+# [Validation] Set up local port forwarding to test service endpoint
+kubectl port-forward deployment/session-service-production 50080:8080 &
+curl localhost:50080/sessions/1
 ```
+
+### Deploy consul-server 0.9.1
+```
+# Create headless service
+kubectl apply -f k8s/consul/service.yml
+
+# Create stateful set
+kubeclt apply -f k8s/consul/statefulset.yml
+
+# [Validation] Set up local port forwarding to test service endpoint
+kubectl port-forward statefulset/consul 38500:8500 &
+browse to http://localhost:38500/ui
+```
+

@@ -3,10 +3,12 @@ package com.bridge2solutions.service.k8s.gateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
 import java.util.Random;
 
 @RestController
@@ -23,14 +25,15 @@ public class ToastController {
     private SessionClient sessionClient;
 
     @GetMapping(produces = "application/json")
-    public Mono<Toast> getToast() {
+    public Mono<Toast> getToast(@RequestHeader(name = "sessionId", required = false) final String rawSessionId) {
+        final String sessionId = Optional.ofNullable(rawSessionId).orElse("1");
         final String value = "From " + id + " (version " + version + "): " + toast;
-        return sessionClient.getSession("1")
+        return sessionClient.getSession(sessionId)
             .map(sessionData -> {
-                final Toast toast = new Toast();
-                toast.setValue(value);
-                toast.setSession(sessionData);
-                return toast;
+                final Toast fullToast = new Toast();
+                fullToast.setValue(value);
+                fullToast.setSession(sessionData);
+                return fullToast;
             });
     }
 }
