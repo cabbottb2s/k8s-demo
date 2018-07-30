@@ -26,12 +26,14 @@ public class ToastController {
 
     @GetMapping(produces = "application/json")
     public Mono<Toast> getToast(@RequestHeader(name = "sessionId", required = false) final String rawSessionId) {
+
         final String sessionId = Optional.ofNullable(rawSessionId).orElse("1");
-        final String value = "From " + id + " (version " + version + "): " + toast;
         return sessionClient.getSession(sessionId)
             .map(sessionData -> {
                 final Toast fullToast = new Toast();
-                fullToast.setValue(value);
+                fullToast.setInstanceId(id);
+                fullToast.setVersion(version);
+                fullToast.setValue(toast);
                 fullToast.setSession(sessionData);
                 return fullToast;
             });

@@ -17,9 +17,14 @@ public class SessionController {
         this.service = service;
     }
 
-    @GetMapping("{sessionId}")
-    public String getSession(@PathVariable("sessionId") final String sessionId) {
-        return "From " + id + " (version " + version + "): " + service.getSession(sessionId);
+    @GetMapping(path = "{sessionId}", produces = "application/json")
+    public Session getSession(@PathVariable("sessionId") final String sessionId) {
+
+        final Session session = new Session();
+        session.setInstanceId(id);
+        session.setVersion(version);
+        session.setValue(service.getSession(sessionId));
+        return session;
     }
 
     @PutMapping("{sessionId}/{sessionData}")

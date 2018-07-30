@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: session-service
-        image: cabbottbridge2/session-service:1.2.0
+        image: cabbottbridge2/session-service:1.3.0
         imagePullPolicy: IfNotPresent
         readinessProbe:
           httpGet:

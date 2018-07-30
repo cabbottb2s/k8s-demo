@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: gateway-service
-        image: cabbottbridge2/gateway-service:1.1.2
+        image: cabbottbridge2/gateway-service:1.2.1
         imagePullPolicy: IfNotPresent
         readinessProbe:
           httpGet:

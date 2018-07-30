@@ -115,8 +115,10 @@ kubectl apply -f k8s/consul/service.yml
 # Create stateful set
 kubeclt apply -f k8s/consul/statefulset.yml
 
+# [Validation] Check membership
+for i in {0..2}; do kubectl exec consul-$i --namespace=consul -- sh -c 'consul members'; done
+
 # [Validation] Set up local port forwarding to test service endpoint
 kubectl port-forward statefulset/consul 38500:8500 &
 browse to http://localhost:38500/ui
 ```
-
