@@ -1,71 +1,111 @@
+autoscale: true
+
 ## APEX - Kubernetes evaluation
 
 ---
 
-## What is Kubernetes
+## Why containers?
+
+* More efficient hardware utilization
+* Accelerated deployment
+  * Infrastructure can change more dynamically
+  * Same full-stack execution environment as builds are promoted
+  * Self-service options for developers
+
+---
+
+## Comparisons
+
+![inline](comparison.png)
+
+---
+## Why Kubernetes
+
+* Right level of abstraction
+  * don't have to manage low-level details (patching VMs, allocating storage/CPU/memory)
+  * still have visibility into environment, still have control to customize vs other PaaS options (Heroku, Cloud Foundry)
+* Applications are treated universally
+  * Docker image containing entire execution environment
+  * YAML descriptor
+* Infrastructure as code
+  * All entities (pods/deployments/service/volumes) are declaratively described
+  * Version controlled with standard SCM tools
+  * Configuration can be templatized for repeatability in CD pipeline
+* Orchestration
+  * Scheduler manages where and how many containers to spin up
+  * Failed containers are replaced
+  * Managed deployments with pause/resume/rollback
+
+---
+
+## What is Kubernetes?
+
+Open-source Container Orchestration system
+
+Provides
+* Manages scheduling of containers (bin-packing problem)
+* Automatic replacement of failed containers
+* Automated deployments using a variety of strategies
+* Networking and storage primitives
 
 Control plane
-* executes commands from kubectl
+* API server for executing commands from (with CLI 'kubectl')
 * scheduler
+* etcd (consensus-based HA datastore) to maintain cluster state
+* multi-master support for HA
 
-etcd
-* consensus-based HA datastore
+Nodes
+* run containers in "pods"
+* kubelet - start/stop pods, provide pods status to control plane
+* cAdvisor - collects system-level metrics
+* kube-proxy - implements network abstraction layer for containers
 
-pods
 
-nodes
-* run pods
 ---
 
 ## (Very) brief history
 
-Mention Borg project
-CNCF
+* Google's project Borg
+  * https://ai.google/research/pubs/pub43438
+  * Open sourced as Kubernetes in 2014
+
+* Cloud Native Computing Foundation (CNCF)
+  * Founded 2015
+  * https://www.cncf.io/
+  * Vendor-neutral nexus for 'cloud-native' Github projects
+  * Training, meetups, news
 
 ---
 
-## Why Kubernetes
 
-* Right level of abstraction
-** still have visibility into environment, still have control to customize (vs PaaS: Heroku, Cloud Foundry)
-** don't have to manage low-level details (patching VMs, allocating storage/CPU/memory)
 
-* Applications are treated universally
-** Docker image containing entire execution environment
-** YAML descriptor
+## Comparison of Concepts
 
-* Accelerated deployment
-** self-service options for developers
-** Infrastructure can change more dynamically
-** Same full-stack execution environment as builds are promoted
-
-* Infrastructure as code
-** All entities (pods/deployments/service/volumes) are declaratively described
-** Version controlled with standard SCM tools
-** Configuration can be templatized for repeatability in CD pipeline
-
-* Orchestration
-** Scheduler manages where and how many containers to spin up
-** Failed containers are replaced
-** Managed deployments with pause/resume/rollback
+| Datacenter | K8S |
+| --- | --- |
+| VIP | Service |
+| Release | Deployment |
+| VM | Pod |
+| Application | Container |
+| Storage | PersistentVolume |
 
 ---
 
-## comparison of concepts
+## Logical architecture
 
-Datacenter <--> K8S
-===================
-
-VIP <--> Service
-Release <--> Deployment
-VM <--> Pod
-Application <--> Container
-Storage <--> PersistentVolume
+![inline](architecture.png)
 
 ---
 
-## Goals
+## Components
 
+![inline](cluster overview.png)
+
+---
+
+## Node
+
+![inline](node.png)
 
 ---
 
@@ -74,19 +114,18 @@ Storage <--> PersistentVolume
 Service Discovery
 Leadership Election
 Persistent Storage
-Visibility
 Security (single-use card)
-CI/CD
 
 ---
 
 ## Operational Requirements
 
-Monitoring and alerting
-* Application
-* Container
-* Node
-* Cluster
+* Monitoring and alerting
+  * Application
+  * Container
+  * Node
+  * Cluster
+* Log aggregation
 
 ---
 
@@ -94,12 +133,11 @@ Monitoring and alerting
 
 Not necessary to be entirely "cloud native", leverage it where it provides greatest benefit.  That means the APEX (micro)services
 
-3rd party Components
+Not considered so far
+
 * Database
 * AMQ
 * Fusion / Solr / Mongo
-
-
 
 ---
 
@@ -109,22 +147,33 @@ Implicitly creates a replica set
 Defines a specific number of pods with specified template  
 Failed pods will be automatically replaced
 
+![inline](deployments.png)
 
 ---
 
-## Deployment strategies
+## Deployment strategies - Rolling Upgrade
 
-Rolling upgrade
-Full green / blue (hardware costs)
-Canary
+![inline](rolling_deployment.png)
 
-TODO: images
+---
+
+## Deployment strategies - Blue / Green
+
+![inline](blue_green_deployment.png)
+
+---
+
+## Deployment strategies - Canary
+
+![inline](canary_deployment.png)
 
 ---
 
 ## Demo using GCE in GCP
 
-Show session-service running locally
+![inline](demo_environment.png)
+
+^ Show session-service running locally
 Make a small change, increment version
 Build/push docker image
 Update deployment version, rollout

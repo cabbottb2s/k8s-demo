@@ -27,6 +27,8 @@ spec:
         env:
         - name: SPRING_CLOUD_CONFIG_URI
           value: 'http://config-service-lb/config'
+        - name: SPRING_CLOUD_CONSUL_HOST
+          value: 'consul.demo.svc.cluster.local'
         - name: SPRING_PROFILES_ACTIVE
           value: kubernetes
         - name: JAVA_OPTS
