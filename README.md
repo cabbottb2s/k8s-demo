@@ -70,7 +70,7 @@ cd gateway-service
 
 # Update Deployment
 cd ..
-kubectl replace -f k8s/gateway-service/app.yml --record
+kubectl apply -f k8s/gateway-service/app.yml --record
 kubectl rollout status deployment gateway-service-production
 
 [Optional: pause/resume]
@@ -78,7 +78,12 @@ kubectl rollout pause deployment gateway-service-production
 kubectl rollout resume deployment gateway-service-production
 
 # [Validation] Access service via public IP
-curl http://$(kubectl get service gateway-service-lb -o jsonpath="{.status.loadBalancer.ingress[0].ip}")/toast
+while true
+do
+  curl http://$(kubectl get service gateway-service-lb -o jsonpath="{.status.loadBalancer.ingress[0].ip}")/toast
+  echo ""
+  sleep 1
+done
 ```
 
 ### Deploy session-service 1.1.x
@@ -100,7 +105,12 @@ kubectl get pod -w
 kubectl logs -l app=session-service
 
 # [Validation] Confirm service is locatable via DNS
-kubectl exec -it $(kubectl get pod -l app=gateway-service -o jsonpath="{.items[0].metadata.name}") -- wget -q -O - http://session-service-lb/sessions/1
+while true
+do
+  kubectl exec -it $(kubectl get pod -l app=gateway-service -o jsonpath="{.items[0].metadata.name}") -- wget -q -O - http://session-service-lb/sessions/1
+  echo ""
+  sleep 1
+done
 
 # [Validation] Set up local port forwarding to test service endpoint
 kubectl port-forward deployment/session-service-production 50080:8080 &
@@ -117,6 +127,9 @@ kubeclt apply -f k8s/consul/statefulset.yml
 
 # [Validation] Check membership
 for i in {0..2}; do kubectl exec consul-$i --namespace=consul -- sh -c 'consul members'; done
+
+# [Validation] Check members are reachable via Service DNS
+kubectl exec -it $(kubectl get pod -l app=gateway-service -o jsonpath="{.items[0].metadata.name}") -- wget -q -O - http://consul.demo.svc.cluster.local:8500/v1/agent/members
 
 # [Validation] Set up local port forwarding to test service endpoint
 kubectl port-forward statefulset/consul 38500:8500 &

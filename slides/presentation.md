@@ -7,9 +7,9 @@ autoscale: true
 ## Why containers?
 
 * More efficient hardware utilization
+* Same full-stack execution environment as builds are promoted
 * Accelerated deployment
   * Infrastructure can change more dynamically
-  * Same full-stack execution environment as builds are promoted
   * Self-service options for developers
 
 ---
@@ -27,6 +27,11 @@ autoscale: true
 * Applications are treated universally
   * Docker image containing entire execution environment
   * YAML descriptor
+  * Language
+
+---
+## Why Kubernetes (continued)
+
 * Infrastructure as code
   * All entities (pods/deployments/service/volumes) are declaratively described
   * Version controlled with standard SCM tools
@@ -42,24 +47,11 @@ autoscale: true
 
 Open-source Container Orchestration system
 
-Provides
-* Manages scheduling of containers (bin-packing problem)
-* Automatic replacement of failed containers
-* Automated deployments using a variety of strategies
-* Networking and storage primitives
-
-Control plane
-* API server for executing commands from (with CLI 'kubectl')
-* scheduler
-* etcd (consensus-based HA datastore) to maintain cluster state
-* multi-master support for HA
-
-Nodes
-* run containers in "pods"
-* kubelet - start/stop pods, provide pods status to control plane
-* cAdvisor - collects system-level metrics
-* kube-proxy - implements network abstraction layer for containers
-
+* Capabilities
+  * Manages scheduling of containers (bin-packing problem)
+  * Automatic replacement of failed containers
+  * Automated deployments using a variety of strategies
+  * Networking and storage primitives
 
 ---
 
@@ -76,8 +68,6 @@ Nodes
   * Training, meetups, news
 
 ---
-
-
 
 ## Comparison of Concepts
 
@@ -103,9 +93,31 @@ Nodes
 
 ---
 
-## Node
+## Control plane
+* API server for executing commands
+* Scheduler to assign pods to nodes
+* Etcd (consensus-based HA datastore) to maintain cluster state
+* Multi-master support for HA
+* Master nodes may run pods, but typically do not
 
-![inline](node.png)
+---
+## Master
+
+![inline](master_internals.png)
+
+---
+
+## Nodes
+* run containers in "pods"
+* kubelet - start/stop pods, provide pods status to control plane
+* cAdvisor - collects system-level metrics
+* kube-proxy - implements network abstraction layer for containers
+
+---
+
+## Nodes
+
+![inline](node_internals.png)
 
 ---
 
@@ -113,6 +125,7 @@ Nodes
 
 Service Discovery
 Leadership Election
+K/V Store
 Persistent Storage
 Security (single-use card)
 
@@ -131,13 +144,12 @@ Security (single-use card)
 
 ## Not in Scope (yet)
 
-Not necessary to be entirely "cloud native", leverage it where it provides greatest benefit.  That means the APEX (micro)services
-
 Not considered so far
 
 * Database
 * AMQ
 * Fusion / Solr / Mongo
+
 
 ---
 
@@ -169,7 +181,7 @@ Failed pods will be automatically replaced
 
 ---
 
-## Demo using GCE in GCP
+## Demo using GKE in GCP
 
 ![inline](demo_environment.png)
 
@@ -185,7 +197,6 @@ Update deployment version, rollout
 CI/CD pipeline
 Monitoring / Alerting (Prometheus?)
 Affinity rules
-multi-container pods
 point-to-point encryption
 Certificate authorities
 Shared PersistentVolumes (maybe..)

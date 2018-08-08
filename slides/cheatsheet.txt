@@ -1,0 +1,25 @@
+curl http://$(kubectl get service gateway-service-lb -o jsonpath="{.status.loadBalancer.ingress[0].ip}")/toast
+
+kubectl scale deployment gateway-service-production --replicas=3
+
+kubectl exec -it $(kubectl get pod -l app=gateway-service -o jsonpath="{.items[0].metadata.name}") -- wget -q -O - http://session-service-lb/sessions/1
+
+# From term 1
+kubectl get pod -w
+
+# From term 2
+export SERVICE_IP=$(kubectl get service gateway-service-lb -o jsonpath="{.status.loadBalancer.ingress[0].ip}")
+while true
+do
+  curl http://$SERVICE_IP/toast
+  echo ""
+  sleep 1
+done
+
+# From term 3
+kubectl apply -f k8s/gateway-service/app.yml --record
+kubectl rollout status deployment gateway-service-production
+
+[Optional: pause/resume]
+kubectl rollout pause deployment gateway-service-production
+kubectl rollout resume deployment gateway-service-production
