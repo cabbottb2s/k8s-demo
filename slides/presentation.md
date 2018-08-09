@@ -27,7 +27,7 @@ autoscale: true
 * Applications are treated universally
   * Docker image containing entire execution environment
   * YAML descriptor
-  * Language
+  * Language agnostic 
 
 ---
 ## Why Kubernetes (continued)

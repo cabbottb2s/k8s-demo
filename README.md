@@ -120,10 +120,10 @@ curl localhost:50080/sessions/1
 ### Deploy consul-server 0.9.1
 ```
 # Create headless service
-kubectl apply -f k8s/consul/service.yml
+kubectl apply -f k8s/consul/service.yml --record
 
 # Create stateful set
-kubeclt apply -f k8s/consul/statefulset.yml
+kubeclt apply -f k8s/consul/statefulset.yml --record
 
 # [Validation] Check membership
 for i in {0..2}; do kubectl exec consul-$i --namespace=consul -- sh -c 'consul members'; done

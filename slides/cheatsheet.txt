@@ -4,6 +4,8 @@ kubectl scale deployment gateway-service-production --replicas=3
 
 kubectl exec -it $(kubectl get pod -l app=gateway-service -o jsonpath="{.items[0].metadata.name}") -- wget -q -O - http://session-service-lb/sessions/1
 
+kubectl delete pod $(kubectl get pod -l app=gateway-service -o jsonpath="{.items[0].metadata.name}")
+
 # From term 1
 kubectl get pod -w
 
@@ -23,3 +25,7 @@ kubectl rollout status deployment gateway-service-production
 [Optional: pause/resume]
 kubectl rollout pause deployment gateway-service-production
 kubectl rollout resume deployment gateway-service-production
+kubectl rollout history deployment gateway-service-production
+kubectl rollout undo deployment gateway-service-production --to-revision=N
+
+kubectl logs -l app=gateway-service --since=5m
